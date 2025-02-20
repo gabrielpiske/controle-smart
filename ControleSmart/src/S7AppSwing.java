@@ -1,14 +1,19 @@
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 public class S7AppSwing extends JFrame {
 
+    private JPanel pnlBlkEst;
+
     public S7AppSwing() {
         setTitle("Leitura e Escrita de TAGs no CLP - Protocolo S7");
-        setSize(450, 600);
+        setSize(850, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
+        setLocationRelativeTo(null);
 
         JLabel labelIp = new JLabel("Ip Host:");
         labelIp.setBounds(50, 10, 100, 30);
@@ -107,6 +112,14 @@ public class S7AppSwing extends JFrame {
         JButton buttonLeituras = new JButton("Leitura Ciclica");
         buttonLeituras.setBounds(150, 500, 200, 30);
         add(buttonLeituras);
+
+        pnlBlkEst = new JPanel();
+        pnlBlkEst.setBounds(380, 10, 280, 245);
+        pnlBlkEst.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        pnlBlkEst.setLayout(null);
+        add(pnlBlkEst);
+
+        updatePnlEstoque();
 
         buttonLeituras.addActionListener((ActionEvent e) -> {
 
@@ -238,6 +251,28 @@ public class S7AppSwing extends JFrame {
 
     }
 
+    private void updatePnlEstoque() {
+        SwingUtilities.invokeLater(() -> {
+            pnlBlkEst.removeAll();
+            int largura = 35;
+            int altura = 35;
+            int espaco = 10;
+            
+            for(int i = 0; i < 28; i++){
+                JLabel label = new JLabel("" + (i + 1), SwingConstants.CENTER);
+                label.setSize(largura, altura);
+                label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                int x = (i % 6) * (largura + espaco);
+                int y = (i / 6) * (altura + espaco);
+                label.setLocation(x + 10, y + 10);
+
+                pnlBlkEst.add(label);
+                pnlBlkEst.revalidate();
+                pnlBlkEst.repaint();
+            }
+        });
+    }
+    
     public static void main(String[] args) throws Exception {
         SwingUtilities.invokeLater(() -> {
             S7AppSwing app = new S7AppSwing();
