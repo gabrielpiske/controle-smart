@@ -2,11 +2,14 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 
 public class S7AppSwing extends JFrame {
 
     private JPanel pnlBlkEst;
+    public static byte[] indexColorEst = new byte[28];
+    public PlcConnector plcEstDb9;
+
+    public JTextField textIp;
 
     public S7AppSwing() {
         setTitle("Leitura e Escrita de TAGs no CLP - Protocolo S7");
@@ -19,7 +22,7 @@ public class S7AppSwing extends JFrame {
         labelIp.setBounds(50, 10, 100, 30);
         add(labelIp);
 
-        JTextField textIp = new JTextField("10.74.241.10");
+        textIp = new JTextField("10.74.241.10");
         textIp.setBounds(150, 10, 200, 30);
         add(textIp);
 
@@ -118,8 +121,14 @@ public class S7AppSwing extends JFrame {
         pnlBlkEst.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         pnlBlkEst.setLayout(null);
         add(pnlBlkEst);
-
         updatePnlEstoque();
+
+        JButton buttonUpdate = new JButton("Update");
+        buttonUpdate.setBounds(380, 265, 280, 30);
+        add(buttonUpdate);
+        buttonUpdate.addActionListener((ActionEvent e) -> {
+            updatePnlEstoque();
+        });
 
         buttonLeituras.addActionListener((ActionEvent e) -> {
 
@@ -252,19 +261,56 @@ public class S7AppSwing extends JFrame {
     }
 
     private void updatePnlEstoque() {
+        plcEstDb9 = new PlcConnector(textIp.getText().trim(), 102);
+        try {
+            plcEstDb9.connect();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        try {
+            indexColorEst = plcEstDb9.readBlock(9, 68, 28);
+        } catch (Exception e1) {
+            e1.printStackTrace();
+            System.out.println("Falha");
+            
+        }
+        for(int i = 0; i < 28; i++){
+            System.out.println(indexColorEst[i]);
+        }
+
         SwingUtilities.invokeLater(() -> {
             pnlBlkEst.removeAll();
             int largura = 35;
             int altura = 35;
             int espaco = 10;
-            
-            for(int i = 0; i < 28; i++){
+
+            for (int i = 0; i < 28; i++) {
                 JLabel label = new JLabel("" + (i + 1), SwingConstants.CENTER);
                 label.setSize(largura, altura);
                 label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                label.setOpaque(true);
+                label.setForeground(Color.WHITE);
                 int x = (i % 6) * (largura + espaco);
                 int y = (i / 6) * (altura + espaco);
                 label.setLocation(x + 10, y + 10);
+
+
+                int color = (int) indexColorEst[i];
+                switch (color) {
+                    case 0 -> {
+                        label.setBackground(Color.lightGray);
+                    }
+                    case 1 -> {
+                        label.setBackground(Color.BLACK);
+                    }
+                    case 2 -> {
+                        label.setBackground(Color.RED);
+                    }
+                    case 3 -> {
+                        label.setBackground(Color.BLUE);
+                    }
+                }
 
                 pnlBlkEst.add(label);
                 pnlBlkEst.revalidate();
@@ -272,7 +318,7 @@ public class S7AppSwing extends JFrame {
             }
         });
     }
-    
+
     public static void main(String[] args) throws Exception {
         SwingUtilities.invokeLater(() -> {
             S7AppSwing app = new S7AppSwing();

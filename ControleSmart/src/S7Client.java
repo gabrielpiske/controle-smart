@@ -311,7 +311,8 @@ public class S7Client {
             // Interpretação do valor lido
             switch (type.toLowerCase()) {
                 case "string" -> value = extractStringFromResponse(response, size);
-                case "block" -> value = bytesToHex(extractBlockFromResponse(response, size), size);
+                //case "block" -> value = bytesToHex(extractBlockFromResponse(response, size), size);
+                case "block" -> value = extractBlockFromResponse(response, size);
                 case "integer" -> value = extractIntegerFromResponse(response);
                 case "float" -> value = extractFloatFromResponse(response);
                 case "byte" -> value = extractByteFromResponse(response);
