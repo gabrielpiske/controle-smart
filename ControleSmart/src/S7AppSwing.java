@@ -260,7 +260,6 @@ public class S7AppSwing extends JFrame {
                 JOptionPane.showMessageDialog(this, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         });
-
     }
 
     private static String bytesToHex(byte[] bytes, int length) {
@@ -389,10 +388,27 @@ public class S7AppSwing extends JFrame {
         });
     }
 
+    private void callThread(){
+        Thread thread = new Thread(() -> {
+            while(true){
+                updatePnlEstoque();
+                updatePnlExpedition();
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException  e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        thread.setDaemon(true); // fechar o programa thread morre
+        thread.start();
+    }
+
     public static void main(String[] args) throws Exception {
         SwingUtilities.invokeLater(() -> {
             S7AppSwing app = new S7AppSwing();
             app.setVisible(true);
+            app.callThread();
         });
     }
 }
