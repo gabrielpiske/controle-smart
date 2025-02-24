@@ -17,6 +17,7 @@ public class S7AppSwing extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         setLocationRelativeTo(null);
+        setResizable(false);
 
         JLabel labelIp = new JLabel("Ip Host:");
         labelIp.setBounds(50, 10, 100, 30);
@@ -275,9 +276,9 @@ public class S7AppSwing extends JFrame {
             System.out.println("Falha");
             
         }
-        for(int i = 0; i < 28; i++){
-            System.out.println(indexColorEst[i]);
-        }
+        //for(int i = 0; i < 28; i++){
+        //    System.out.println(indexColorEst[i]);
+        //}
 
         SwingUtilities.invokeLater(() -> {
             pnlBlkEst.removeAll();
