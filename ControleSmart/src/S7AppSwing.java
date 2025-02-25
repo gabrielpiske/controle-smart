@@ -159,7 +159,7 @@ public class S7AppSwing extends JFrame {
                 leituraCiclica = true;
                 buttonLeituras.setText("Desativar Leitura Ciclica");
             }
-            callThread();
+            startUpdateWorker();
         });
 
         buttonRead.addActionListener((ActionEvent e) -> {
@@ -397,20 +397,20 @@ public class S7AppSwing extends JFrame {
         });
     }
 
-    private void callThread() {
-        Thread thread = new Thread(() -> {
-            while (leituraCiclica) {
-                updatePnlEstoque();
-                updatePnlExpedition();
-                try {
+    private void startUpdateWorker() {
+        SwingWorker<Void, Void> worker = new SwingWorker<>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                while (leituraCiclica) {
+                    updatePnlEstoque();
+                    updatePnlExpedition();
+    
                     Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
+                return null;
             }
-        });
-        thread.setDaemon(true); // fechar o programa thread morre
-        thread.start();
+        };
+        worker.execute();
     }
 
     public static void main(String[] args) throws Exception {
