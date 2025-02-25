@@ -17,6 +17,8 @@ public class S7AppSwing extends JFrame {
 
     public JTextField textIp;
 
+    public boolean leituraCiclica = false;
+
     public S7AppSwing() {
         setTitle("Leitura e Escrita de TAGs no CLP - Protocolo S7");
         setSize(850, 600);
@@ -119,7 +121,7 @@ public class S7AppSwing extends JFrame {
         textValueWrite.setBounds(150, 450, 200, 30);
         add(textValueWrite);
 
-        JButton buttonLeituras = new JButton("Leitura Ciclica");
+        JButton buttonLeituras = new JButton("Ativar Leitura Ciclica");
         buttonLeituras.setBounds(150, 500, 200, 30);
         add(buttonLeituras);
 
@@ -150,7 +152,14 @@ public class S7AppSwing extends JFrame {
         });
 
         buttonLeituras.addActionListener((ActionEvent e) -> {
-
+            if(leituraCiclica){
+                leituraCiclica = false;
+                buttonLeituras.setText("Ativar Leitura Ciclica");
+            } else {
+                leituraCiclica = true;
+                buttonLeituras.setText("Desativar Leitura Ciclica");
+            }
+            callThread();
         });
 
         buttonRead.addActionListener((ActionEvent e) -> {
@@ -388,14 +397,14 @@ public class S7AppSwing extends JFrame {
         });
     }
 
-    private void callThread(){
+    private void callThread() {
         Thread thread = new Thread(() -> {
-            while(true){
+            while (leituraCiclica) {
                 updatePnlEstoque();
                 updatePnlExpedition();
                 try {
                     Thread.sleep(2000);
-                } catch (InterruptedException  e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -408,7 +417,7 @@ public class S7AppSwing extends JFrame {
         SwingUtilities.invokeLater(() -> {
             S7AppSwing app = new S7AppSwing();
             app.setVisible(true);
-            app.callThread();
+            //app.callThread();
         });
     }
 }
